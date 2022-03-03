@@ -1,21 +1,26 @@
 require('dotenv').config()
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser')
 
 const PORT = process.env.PORT || 5001;
 
 //-----------Imports
 const { dbConnect } = require('./config/mongoDB');
+const userRoute = require('./routers/userRouter');
 
+//Middlewares
+app.use(bodyParser.urlencoded({ extended: false }));
+
+
+//EJS
 app.set('view engine', 'ejs');
+app.set("views", "./views");
 
-app.get('/', (req, res) => {
-    res.render('index');
-});
 
-app.get('/register', (req, res) => {
-    res.render('register');
-});
+//ROUTES
+app.use('/', userRoute);
+
 
 dbConnect()
 app.listen(PORT, () => {
