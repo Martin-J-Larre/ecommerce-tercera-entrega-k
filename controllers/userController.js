@@ -3,9 +3,7 @@ const { registerSchema } = require('../utils/authValidation');
 const { joiErrorFormatter, mongooseErrorFormatter } = require('../utils/validationFormater');
 
 
-
 const renderIndex = (req, res) => {
-    req.session.views = (req.session.views || 0) + 1
     console.log('User:', req.user)
     return res.render('index')
 }
