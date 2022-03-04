@@ -1,10 +1,12 @@
 require("dotenv").config();
 const express = require("express");
-const app = express();
 const bodyParser = require("body-parser");
 const session = require("express-session");
+const passport = require('passport');
+require('./utils/localStrategy');
 
 const PORT = process.env.PORT || 5001;
+const app = express();
 
 //-----------Imports
 const { dbConnect } = require("./config/mongoDB");
@@ -14,7 +16,7 @@ const userRoute = require("./routers/userRouter");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
 app.set("views", "./views");
-// app.set("trust proxy", 1); pal NGNX?
+//Session
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
@@ -23,6 +25,9 @@ app.use(
         cookie: { secure: false },
     })
 );
+// Passport
+app.use(passport.initialize())
+app.use(passport.session())
 
 //ROUTES
 app.use("/", userRoute);

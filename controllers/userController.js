@@ -5,9 +5,9 @@ const { joiErrorFormatter, mongooseErrorFormatter } = require('../utils/validati
 
 // TODO : Index PONERLO EN OTRO LADO O EN EL INDEX.JS nO mAtcH with User I think
 const renderIndex = (req, res) => {
-    req.session.views = (req.session.views || 0) + 1;
-    console.log(`You have visited ${req.session.views} times`);
-    return res.render('index');
+    req.session.views = (req.session.views || 0) + 1
+    console.log('User:', req.user)
+    return res.render('index')
 }
 
 
