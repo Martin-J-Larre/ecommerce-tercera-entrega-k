@@ -3,7 +3,7 @@ const { registerSchema } = require('../utils/authValidation');
 const { joiErrorFormatter, mongooseErrorFormatter } = require('../utils/validationFormater');
 
 
-// TODO : Index PONERLO EN OTRO LADO O EN EL INDEX.JS nO mAtcH with User I think
+
 const renderIndex = (req, res) => {
     req.session.views = (req.session.views || 0) + 1
     console.log('User:', req.user)

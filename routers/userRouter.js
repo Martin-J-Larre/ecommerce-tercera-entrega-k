@@ -9,7 +9,7 @@ const { renderIndex,
         renderLogin, 
         userLogin } = require('../controllers/userController');
 
-// TODO : Index PONERLO EN OTRO LADO O EN EL INDEX.JS nO mAtcH with User I think
+        
 router.get('/', renderIndex );
 //----------REGISTRATION
 router.get('/register', renderRegister);
