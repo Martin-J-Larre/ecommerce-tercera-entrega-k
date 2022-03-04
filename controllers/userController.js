@@ -1,11 +1,11 @@
-const { database } = require('firebase-admin');
 const User = require('../models/UserModel');
 const { registerSchema } = require('../utils/authValidation');
 const { joiErrorFormatter, mongooseErrorFormatter } = require('../utils/validationFormater');
 
-
 const renderIndex = (req, res) => {
-    res.render('index');
+    req.session.views = (req.session.views || 0) + 1;
+    console.log(`You have visited ${req.session.views} times`);
+    return res.render('index');
 }
 
 const renderRegister = (req, res) => {
