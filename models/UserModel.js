@@ -31,7 +31,6 @@ const UserSchema = new mongoose.Schema({
     versionKey: false 
 });
 
-//Todo: esto es wrong arreglar
 UserSchema.path("email").validate(async (email) => {
     const emailCount = await mongoose.models.User.countDocuments({ email });
     return !emailCount;
