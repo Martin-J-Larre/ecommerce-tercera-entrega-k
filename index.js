@@ -29,6 +29,7 @@ app.use(
         store: new MongoStore({ mongooseConnection: mongoDbConnection })
     })
 );
+app.use(express.static('public'));
 
 app.use(logger('dev'))
 app.use(passport.initialize())
@@ -40,8 +41,9 @@ app.locals.errors = {}
 
 //ROUTES
 app.use("/", userRoute);
-
-
+app.use((req, res, next) => {
+    res.status(404).render("404")
+})
 app.listen(PORT, () => {
     console.log(`Server listening on http://localhost:${PORT}`);
 });

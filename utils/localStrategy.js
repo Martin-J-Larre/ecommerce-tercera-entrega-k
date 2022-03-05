@@ -10,8 +10,6 @@ passport.use(
         async (email, password, done) => {
             try {
                 const user = await User.findOne({ email });
-                // console.log("User --------->",user);
-                //Todo: usar if de una sola linea e look up about
                 if(!user) done(null, false)
                 if(await user.checkPassword(password)) return done(null, user);
                 done(null, false)

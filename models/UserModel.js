@@ -31,6 +31,12 @@ const UserSchema = new mongoose.Schema({
     versionKey: false 
 });
 
+//Todo: esto es wrong arreglar
+UserSchema.path("email").validate(async (email) => {
+    const emailCount = await mongoose.models.User.countDocuments({ email });
+    return !emailCount;
+}, "Email already exists");
+
 UserSchema.pre('save', async function (next) {
     if (!this.isModified('password')) next()
     this.password = await bcrypt.hash(this.password, 10)
