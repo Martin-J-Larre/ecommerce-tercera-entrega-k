@@ -11,7 +11,7 @@ const renderIndex = (req, res) => {
 
 //----------RIGISTER
 const renderRegister = (req, res) => {
-    return res.render('register', { message: {}, formData: {}, errors: {} });
+    return res.render('register');
 }
     
 const createrRegister = async (req, res) => {
@@ -36,7 +36,6 @@ const createrRegister = async (req, res) => {
                 type: 'success',
                 body: 'Registration success'
             },
-            errors: {},
             formData: req.body
         })
         
@@ -55,11 +54,7 @@ const createrRegister = async (req, res) => {
 
 // LOGIN
 const renderLogin = (req, res) => {
-    return res.render('login', {
-        message: {},
-        formData: {},
-        errors: {}
-    })
+    return res.render('login')
 }
 
 const userLogin = (req, res) => {
@@ -67,9 +62,7 @@ const userLogin = (req, res) => {
         message: {
             type: 'success',
             body: 'Login Success'
-        },
-        formData: {},
-        errors: {}
+        }
     })
 }
 

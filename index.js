@@ -31,6 +31,11 @@ app.use(
 // Passport
 app.use(passport.initialize())
 app.use(passport.session())
+// { message: {}, formData: {}, errors: {} } // add to locals var express
+app.locals.message = {}
+app.locals.formData = {}
+app.locals.errors = {}
+
 
 //ROUTES
 app.use("/", userRoute);
