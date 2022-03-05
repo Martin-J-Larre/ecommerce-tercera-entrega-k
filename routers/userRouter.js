@@ -4,12 +4,14 @@ const router = express.Router();
 const passport = require('passport')
 
 const { authMiddleware } = require('../middlewares/authMiddleware');        
-const { guestMiddleware } = require('../middlewares/guestMiddleware');        
+const { guestMiddleware } = require('../middlewares/guestMiddleware'); 
+const flasherMiddleware = require('../middlewares/flasherMiddleware')       
 const { renderIndex, 
         renderRegister, 
         createrRegister, 
         renderLogin, 
-        userLogin 
+        userLogin,
+        userLogout 
 } = require('../controllers/userController');
 
 
@@ -22,16 +24,20 @@ router.get('/homepage', authMiddleware, (req, res) => {
 } );
 
 
-//----------REGISTRATION
-router.get('/register',guestMiddleware, renderRegister);
+//----------REGISTER
+router.get('/register',guestMiddleware, flasherMiddleware, renderRegister);
 router.post('/register',guestMiddleware, createrRegister);
 
-//----------LOGINS
+//----------LOGIN
 router.get('/login',guestMiddleware, renderLogin);
 
 router.post('/login',guestMiddleware, passport.authenticate('local', {
     successRedirect: '/',
     failureRedirect: '/login'
 }), userLogin);
+
+//---------LOG OUT
+router.get('/logout',authMiddleware, userLogout);
+
 
 module.exports = router;

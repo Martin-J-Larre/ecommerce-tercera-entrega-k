@@ -20,24 +20,26 @@ const createrRegister = async (req, res) => {
             abortEarly: false
         })  
         if (validationResult.error) {
-            return res.render( 'register', {
+            req.session.flashData = {
                 message: {
                     type: 'error',
                     body: 'Validation Error',
                 },
                 errors: joiErrorFormatter(validationResult.error),
                 formData: req.body
-            });
+            }
+            return res.redirect('/register')
         }
         const user = new User(req.body)
         await user.save()
-        return res.render( 'register', {
+        req.session.flashData = {
             message: {
                 type: 'success',
                 body: 'Registration success'
             },
             formData: req.body
-        })
+        }
+        return res.redirect( '/register')
         
     } catch (err) {
         console.error(err);
@@ -58,6 +60,7 @@ const renderLogin = (req, res) => {
 }
 
 const userLogin = (req, res) => {
+
     return res.render('login', {
         message: {
             type: 'success',
@@ -66,10 +69,18 @@ const userLogin = (req, res) => {
     })
 }
 
+// LOGOUT
+const userLogout = (req, res) => {
+    req.logout()
+    res.redirect('/')
+}
+
 
 module.exports = { 
     renderIndex, 
     renderRegister, 
     createrRegister, 
     renderLogin,
-    userLogin }
+    userLogin,
+    userLogout
+}
