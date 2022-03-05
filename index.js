@@ -1,49 +1,78 @@
 require("dotenv").config();
 const express = require("express");
-const session = require("express-session");
+const path = require("path");
 const bodyParser = require("body-parser");
-const logger = require('morgan')
 require("./config/mongoDB");
-const MongoStore = require('connect-mongo')(session);
-const mongoDbConnection = require('./config/mongoDB')
-const passport = require('passport');
-require('./utils/localStrategy');
+const session = require("express-session");
+const MongoDBStore = require("connect-mongo")(session);
+const csrf = require("csurf");
+const flash = require("connect-flash");
 
-const userRoute = require("./routers/userRouter");
+const errorController = require("./controllers/error");
+const User = require("./models/user");
 
-const PORT = process.env.PORT || 5001;
+const MONGODB_URI = process.env.DB_MONGO_ATLAS_URI;
+
 const app = express();
+const store = new MongoDBStore({
+    uri: MONGODB_URI,
+    collection: "sessions",
+});
+const csrfProtection = csrf();
 
-
-//Middlewares
-app.use(bodyParser.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
-app.set("views", "./views");
-//Session
+app.set("views", "views");
+
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth");
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
         resave: false,
-        saveUninitialized: true,
-        cookie: { secure: false },
-        store: new MongoStore({ mongooseConnection: mongoDbConnection })
+        saveUninitialized: false,
+        store: store,
     })
 );
-app.use(express.static('public'));
+app.use(csrfProtection);
+app.use(flash());
 
-app.use(logger('dev'))
-app.use(passport.initialize())
-app.use(passport.session())
-app.locals.message = {}
-app.locals.formData = {}
-app.locals.errors = {}
-
-
-//ROUTES
-app.use("/", userRoute);
 app.use((req, res, next) => {
-    res.status(404).render("404")
-})
+    res.locals.isAuthenticated = req.session.isLoggedIn;
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
+
+app.use((req, res, next) => {
+    // throw new Error('Sync Dummy');
+    if (!req.session.user) {
+        return next();
+    }
+    User.findById(req.session.user._id)
+        .then((user) => {
+            if (!user) {
+                return next();
+            }
+            req.user = user;
+            next();
+        })
+        .catch((err) => {
+            next(new Error(err));
+        });
+});
+
+
+app.use((error, req, res, next) => {
+    res.status(500).render("500", {
+        pageTitle: "Error!",
+        path: "/500",
+        isAuthenticated: req.session.isLoggedIn,
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server listening on http://localhost:${PORT}`);
 });

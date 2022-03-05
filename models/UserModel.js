@@ -1,52 +1,66 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 
-const UserSchema = new mongoose.Schema({
+const Schema = mongoose.Schema;
 
-    name:{ 
-        type: String, 
-        required:[true, "Name is required"], 
-        minlength:[3, "Name can't be smaller than 3 characters"], 
-        maxlength:[30, "Name can't be greater than 30 characters"]
-    },
-    email:{ 
+const userSchema = new Schema({
+    email: {
         type: String,
-        required:[true, "Email is required"],
-        maxlength:[30, "Name can't be greater than 30 characters"],
-        index:true
+        required: true,
     },
-    password:{ 
-        type: String, 
-        required:[true, "Password is required"]},
-    isActive: {
-        type: Boolean,
-        default: true,
+    password: {
+        type: String,
+        required: true,
     },
-    isDeleted: {
-        type: Boolean,
-        default: false,
-    }
-},{
-    timestamps: true,
-    versionKey: false 
+    resetToken: String,
+    resetTokenExpiration: Date,
+    cart: {
+        items: [
+            {
+                productId: {
+                    type: Schema.Types.ObjectId,
+                    ref: "Product",
+                    required: true,
+                },
+                quantity: { type: Number, required: true },
+            },
+        ],
+    },
 });
 
-UserSchema.path("email").validate(async (email) => {
-    const emailCount = await mongoose.models.User.countDocuments({ email });
-    return !emailCount;
-}, "Email already exists");
+userSchema.methods.addToCart = function (product) {
+    const cartProductIndex = this.cart.items.findIndex((cp) => {
+        return cp.productId.toString() === product._id.toString();
+    });
+    let newQuantity = 1;
+    const updatedCartItems = [...this.cart.items];
 
-UserSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) next()
-    this.password = await bcrypt.hash(this.password, 10)
-    next()
-})
+    if (cartProductIndex >= 0) {
+        newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+        updatedCartItems[cartProductIndex].quantity = newQuantity;
+    } else {
+        updatedCartItems.push({
+            productId: product._id,
+            quantity: newQuantity,
+        });
+    }
+    const updatedCart = {
+        items: updatedCartItems,
+    };
+    this.cart = updatedCart;
+    return this.save();
+};
 
-UserSchema.methods.checkPassword = async function (password) {
-    const result = await bcrypt.compare(password, this.password)
-    console.log(result);
-    return result
-}
+userSchema.methods.removeFromCart = function (productId) {
+    const updatedCartItems = this.cart.items.filter((item) => {
+        return item.productId.toString() !== productId.toString();
+    });
+    this.cart.items = updatedCartItems;
+    return this.save();
+};
 
+userSchema.methods.clearCart = function () {
+    this.cart = { items: [] };
+    return this.save();
+};
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model("User", userSchema);
