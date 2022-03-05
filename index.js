@@ -1,19 +1,21 @@
-require("dotenv").config();
 const express = require("express");
 const path = require("path");
+require("dotenv").config();
 const bodyParser = require("body-parser");
 require("./config/mongoDB");
 const session = require("express-session");
-const MongoDBStore = require("connect-mongo")(session);
+const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
 
+const app = express();
+
+const PORT = process.env.PORT || 5001;
 const MONGODB_URI = process.env.DB_MONGO_ATLAS_URI;
 
-const app = express();
 const store = new MongoDBStore({
     uri: MONGODB_URI,
     collection: "sessions",
@@ -31,7 +33,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
     session({
-        secret: process.env.SESSION_SECRET,
+        secret: "my secret",
         resave: false,
         saveUninitialized: false,
         store: store,
@@ -47,7 +49,6 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-    // throw new Error('Sync Dummy');
     if (!req.session.user) {
         return next();
     }
@@ -64,6 +65,13 @@ app.use((req, res, next) => {
         });
 });
 
+app.use("/admin", adminRoutes);
+app.use(shopRoutes);
+app.use(authRoutes);
+
+app.get("/500", errorController.get500);
+
+app.use(errorController.get404);
 
 app.use((error, req, res, next) => {
     res.status(500).render("500", {
