@@ -46,6 +46,10 @@ exports.getSignup = (req, res, next) => {
         pageTitle: "Signup",
         errorMessage: message,
         oldInput: {
+            phone:"",
+            age:"",
+            name:"",
+            address:"",
             email: "",
             password: "",
             confirmPassword: "",
@@ -121,6 +125,10 @@ exports.postLogin = (req, res, next) => {
 };
 
 exports.postSignup = (req, res, next) => {
+    const phone = req.body.phone;
+    const age = req.body.age;
+    const name = req.body.name;
+    const address = req.body.address;
     const email = req.body.email;
     const password = req.body.password;
 
@@ -132,6 +140,10 @@ exports.postSignup = (req, res, next) => {
             pageTitle: "Signup",
             errorMessage: errors.array()[0].msg,
             oldInput: {
+                phone: phone,
+                age: age,
+                name: name,
+                address: address,
                 email: email,
                 password: password,
                 confirmPassword: req.body.confirmPassword,
@@ -144,6 +156,10 @@ exports.postSignup = (req, res, next) => {
         .hash(password, 12)
         .then((hashedPassword) => {
             const user = new User({
+                phone:phone,
+                age: age,
+                name: name,
+                address: address,
                 email: email,
                 password: hashedPassword,
                 cart: { items: [] },

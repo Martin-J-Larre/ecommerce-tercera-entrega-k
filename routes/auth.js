@@ -13,7 +13,7 @@ router.get("/signup", authController.getSignup);
 router.post(
     "/login",
     [
-        body("email")
+            body("email")
             .isEmail()
             .withMessage("Please enter a valid email address.")
             .normalizeEmail(),

@@ -267,6 +267,10 @@ form {
 }
 .error404 h1{
     text-align: center;
+
+}
+#phone{
+    padding:5px 74px;
 }
 
 @media (min-width: 768px) {

@@ -12,6 +12,51 @@
         <% } %>
         <form class="login-form" action="/signup" method="POST" novalidate>
             <div class="form-control">
+                <label for="name">Name</label>
+                <input 
+                    class="<%= validationErrors.find(e => e.param === 'name') ? 'invalid' : '' %>"
+                    type="text" 
+                    name="name" 
+                    id="name" 
+                    value="<%= oldInput.name %>">
+            </div>
+            <div class="form-control">
+                <label for="address">Address</label>
+                <input 
+                    class="<%= validationErrors.find(e => e.param === 'address') ? 'invalid' : '' %>"
+                    type="text" 
+                    name="address" 
+                    id="address" 
+                    value="<%= oldInput.address %>">
+            </div>
+            <div class="form-control">
+                <label for="age">Age</label>
+                <input 
+                    class="<%= validationErrors.find(e => e.param === 'age') ? 'invalid' : '' %>"
+                    type="number" 
+                    name="age" 
+                    id="age" 
+                    value="<%= oldInput.age %>">
+            </div>
+            <!-- <div class="form-control phone-imput">
+                <label for="phone">Phone</label>
+                <input 
+                    class="<%= validationErrors.find(e => e.param === 'phone') ? 'invalid' : '' %>"
+                    type="tel" 
+                    name="phone" 
+                    id="phone" 
+                    value="<%= oldInput.phone %>">
+                    
+            </div> -->
+            <!-- ! No anda, encontrarle la vuelta mientras usar el de arriba!!! -->
+            <!-- ! No anda, intl-tel-input !!!! encontrarle la vuelta!!! -->
+            <div>
+                <label for="phone">Phone</label>
+                <input id="phone" type="tel" name="phone" />
+
+            </div>
+
+            <div class="form-control">
                 <label for="email">E-Mail</label>
                 <input 
                     class="<%= validationErrors.find(e => e.param === 'email') ? 'invalid' : '' %>"
