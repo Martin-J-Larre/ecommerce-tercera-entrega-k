@@ -6,8 +6,8 @@ const sendgridTransport = require("nodemailer-sendgrid-transport");
 const { validationResult } = require("express-validator/check");
 
 const User = require("../models/user");
-// const { enviarEthereal } = require('../email/ethereal');
-const sendEmail = require('../email/ethereal');
+// const  enviarEthereal  = require('../email/ethereal');
+// const sendEmail = require('../email/ethereal');
 const transporter = nodemailer.createTransport(
     sendgridTransport({
         auth: {
@@ -165,8 +165,37 @@ exports.postSignup = (req, res, next) => {
                 password: hashedPassword,
                 cart: { items: [] },
             });
-            //! mail
-            sendEmail.enviarEthereal(process.env.EMAIL_ADMIN, "Nuevo Registro", JSON.stringify(user));
+            // ----------- Gmail
+            console.log("user----->",user);
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL_GMAIL,
+                    pass: process.env.GMAIL_PWORD
+                }
+            });
+            (async() => {
+                const options = {
+                    From: "ShopApp",
+                    to: process.env.EMAIL_GMAIL,
+                    subject: "Nuevo registro",
+                    html:`<h1>Nuevo Usuario</h1>
+                        <p>Name:${user.name}</p>
+                        <p>Email:${user.email}</p>
+                        <p>Address:${user.address}</p>
+                        <p>Phone:${user.phone}</p>
+                        <p>Age:${user.age}</p>
+                        `
+                }
+                try {
+                    const resp = await transporter.sendMail(options);
+                    console.log("respuesta",resp);
+                } catch (err) {
+                    console.log(err);
+                }
+            })();
+            // ! Mail ethereal no funciona
+            // enviarEthereal(process.env.EMAIL_ADMIN, "Nuevo Registro", JSON.stringify(user));
             return user.save();
         })
         .then((result) => {
