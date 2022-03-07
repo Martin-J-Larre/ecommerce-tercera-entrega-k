@@ -3,6 +3,8 @@ const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const sendgridTransport = require("nodemailer-sendgrid-transport");
+
+let { loggerInfo, loggerError } = require('../utils/logs');
 const { validationResult } = require("express-validator/check");
 
 const User = require("../models/user");
@@ -98,7 +100,7 @@ exports.postLogin = (req, res, next) => {
                         req.session.isLoggedIn = true;
                         req.session.user = user;
                         return req.session.save((err) => {
-                            console.log(err);
+                            loggerError.error(err);
                             res.redirect("/");
                         });
                     }
@@ -114,7 +116,7 @@ exports.postLogin = (req, res, next) => {
                     });
                 })
                 .catch((err) => {
-                    console.log(err);
+                    loggerError.error(err);
                     res.redirect("/login");
                 });
         })
@@ -135,7 +137,7 @@ exports.postSignup = (req, res, next) => {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        console.log(errors.array());
+        loggerError.error(errors.array());
         return res.status(422).render("auth/signup", {
             path: "/signup",
             pageTitle: "Signup",
@@ -166,7 +168,7 @@ exports.postSignup = (req, res, next) => {
                 cart: { items: [] },
             });
             // ----------- Gmail
-            console.log("user----->",user);
+            loggerInfo.info("user----->",user);
             const transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
@@ -189,9 +191,9 @@ exports.postSignup = (req, res, next) => {
                 }
                 try {
                     const resp = await transporter.sendMail(options);
-                    console.log("respuesta",resp);
+                    loggerInfo.info("respuesta",resp);
                 } catch (err) {
-                    console.log(err);
+                    loggerError.error(err);
                 }
             })();
             // ! Mail ethereal no funciona
@@ -210,7 +212,7 @@ exports.postSignup = (req, res, next) => {
 
 exports.postLogout = (req, res, next) => {
     req.session.destroy((err) => {
-        console.log(err);
+        loggerError.error(err);
         res.redirect("/");
     });
 };
@@ -232,7 +234,7 @@ exports.getReset = (req, res, next) => {
 exports.postReset = (req, res, next) => {
     crypto.randomBytes(32, (err, buffer) => {
         if (err) {
-            console.log(err);
+            loggerError.error(err);
             return res.redirect("/reset");
         }
         const token = buffer.toString("hex");

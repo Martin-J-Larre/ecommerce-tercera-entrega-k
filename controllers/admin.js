@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const { validationResult } = require("express-validator/check");
-
+let { loggerInfo, loggerError } = require('../utils/logs');
 const Product = require("../models/product");
 
 exports.getAddProduct = (req, res, next) => {
@@ -23,7 +23,7 @@ exports.postAddProduct = (req, res, next) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        console.log(errors.array());
+        loggerError.error(errors.array());
         return res.status(422).render("admin/edit-product", {
             pageTitle: "Add Product",
             path: "/admin/add-product",
@@ -50,7 +50,7 @@ exports.postAddProduct = (req, res, next) => {
     product
         .save()
         .then((result) => {
-            console.log("Created Product"); //todo cambiar por logs
+            loggerInfo.info("Created Product"); //todo cambiar por logs
             res.redirect("/admin/products");
         })
         .catch((err) => {
@@ -125,7 +125,7 @@ exports.postEditProduct = (req, res, next) => {
             product.description = updatedDesc;
             product.imageUrl = updatedImageUrl;
             return product.save().then((result) => {
-                console.log("UPDATED PRODUCT!");
+                loggerInfo.info("UPDATED PRODUCT!");
                 res.redirect("/admin/products");
             });
         })
@@ -139,7 +139,7 @@ exports.postEditProduct = (req, res, next) => {
 exports.getProducts = (req, res, next) => {
     Product.find({ userId: req.user._id })
         .then((products) => {
-            // console.log(products); //Cambiar por logs
+            loggerInfo.info(products);
             res.render("admin/products", {
                 prods: products,
                 pageTitle: "Admin Products",
@@ -157,7 +157,7 @@ exports.postDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
     Product.deleteOne({ _id: prodId, userId: req.user._id })
         .then(() => {
-            console.log("DESTROYED PRODUCT");
+            loggerInfo.info("DESTROYED PRODUCT");
             res.redirect("/admin/products");
         })
         .catch((err) => {
