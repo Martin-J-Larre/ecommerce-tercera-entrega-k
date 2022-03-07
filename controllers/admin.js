@@ -50,7 +50,7 @@ exports.postAddProduct = (req, res, next) => {
     product
         .save()
         .then((result) => {
-            console.log("Created Product");
+            console.log("Created Product"); //todo cambiar por logs
             res.redirect("/admin/products");
         })
         .catch((err) => {
@@ -139,7 +139,7 @@ exports.postEditProduct = (req, res, next) => {
 exports.getProducts = (req, res, next) => {
     Product.find({ userId: req.user._id })
         .then((products) => {
-            console.log(products);
+            // console.log(products); //Cambiar por logs
             res.render("admin/products", {
                 prods: products,
                 pageTitle: "Admin Products",

@@ -1,3 +1,6 @@
+<!--todo: *************** debo lo de la foto -->
+
+
 <%- include('../includes/head.ejs') %>
     <link rel="stylesheet" href="/css/forms.css">
     <link rel="stylesheet" href="/css/auth.css">
@@ -38,18 +41,18 @@
                     id="age" 
                     value="<%= oldInput.age %>">
             </div>
-            <!-- <div class="form-control phone-imput">
-                <label for="phone">Phone</label>
-                <input 
-                    class="<%= validationErrors.find(e => e.param === 'phone') ? 'invalid' : '' %>"
-                    type="tel" 
-                    name="phone" 
-                    id="phone" 
-                    value="<%= oldInput.phone %>">
+            <!-- // <div class="form-control phone-imput">
+                // <label for="phone">Phone</label>
+                // <input 
+                //   class="<%= validationErrors.find(e => e.param === 'phone') ? 'invalid' : '' %>"
+                //    type="tel" 
+                //    name="phone" 
+                //    id="phone" 
+                //    value="<%= oldInput.phone %>">
                     
-            </div> -->
-            <!-- ! No anda, encontrarle la vuelta mientras usar el de arriba!!! -->
-            <!-- ! No anda, intl-tel-input !!!! encontrarle la vuelta!!! -->
+                //   </div> -->
+            <!--// ! No anda, encontrarle la vuelta mientras usar el de arriba!!! -->
+            <!--// ! No anda, intl-tel-input !!!! encontrarle la vuelta!!! -->
             <div>
                 <label for="phone">Phone</label>
                 <input id="phone" type="tel" name="phone" />
