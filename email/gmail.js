@@ -1,6 +1,6 @@
 // // require('dotenv').config();
 // // const nodemailer = require('nodemailer');
-
+// let { loggerInfo, loggerError } = require('../utils/logs');
 
 // const transporter = nodemailer.createTransport({
 //     host: 'gmail',
@@ -19,8 +19,8 @@
 //     }
 //     try {
 //         const resp = await transporter.sendMail(options);
-//         console.log("respuesta",resp);
+//         loggerInfo.info("respuesta",resp);
 //     } catch (err) {
-//         console.log(err);
+//         loggerError.error(err);
 //     }
 // })();

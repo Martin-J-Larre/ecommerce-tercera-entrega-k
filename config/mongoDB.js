@@ -1,6 +1,6 @@
 require('dotenv').config()
 const mongoose = require('mongoose');
-
+let { loggerInfo } = require('../utils/logs');
 const DB_URI = process.env.DB_MONGO_ATLAS_URI;
 
 mongoose.connect(DB_URI, {
@@ -9,7 +9,7 @@ mongoose.connect(DB_URI, {
 })
 
 mongoose.connection.once('open', () =>{
-    console.log("****** DATABASE CONNECTED ******");
+    loggerInfo.info("****** DATABASE CONNECTED ******");
 })
 
 module.exports = mongoose.connection

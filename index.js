@@ -7,9 +7,11 @@ const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
+const compression = require('compression');
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
+let { loggerInfo } = require('./utils/logs');
 
 const app = express();
 
@@ -29,6 +31,7 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 
+app.use(compression())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
@@ -82,5 +85,5 @@ app.use((error, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server listening on http://localhost:${PORT}`);
+    loggerInfo.info(`Server listening on http://localhost:${PORT}`);
 });
