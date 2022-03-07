@@ -8,9 +8,6 @@ let { loggerInfo, loggerError } = require('../utils/logs');
 const { validationResult } = require("express-validator/check");
 
 const User = require("../models/user");
-const sendEmail = require('../email/ethereal');
-// const  enviarEthereal  = require('../email/ethereal');
-// const sendEmail = require('../email/ethereal');
 const transporter = nodemailer.createTransport(
     sendgridTransport({
         auth: {
@@ -197,8 +194,6 @@ exports.postSignup = (req, res, next) => {
                     loggerError.error(err);
                 }
             })();
-            // ! Mail ethereal no funciona
-            // enviarEthereal(process.env.EMAIL_ADMIN, "Nuevo Registro", JSON.stringify(user));
             return user.save();
         })
         .then((result) => {

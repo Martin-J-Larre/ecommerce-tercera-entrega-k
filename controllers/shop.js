@@ -77,7 +77,7 @@ exports.postCart = (req, res, next) => {
             return req.user.addToCart(product);
         })
         .then((result) => {
-            loggerInfo.info(result);
+            // loggerInfo.info(result);
             res.redirect("/cart");
         })
         .catch((err) => {
