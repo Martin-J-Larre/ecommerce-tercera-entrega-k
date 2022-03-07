@@ -6,7 +6,6 @@ const sendgridTransport = require("nodemailer-sendgrid-transport");
 const { validationResult } = require("express-validator/check");
 
 const User = require("../models/user");
-// const { enviarEthereal } = require('../email/ethereal');
 const sendEmail = require('../email/ethereal');
 const transporter = nodemailer.createTransport(
     sendgridTransport({
@@ -165,8 +164,6 @@ exports.postSignup = (req, res, next) => {
                 password: hashedPassword,
                 cart: { items: [] },
             });
-            //! mail
-            sendEmail.enviarEthereal(process.env.EMAIL_ADMIN, "Nuevo Registro", JSON.stringify(user));
             return user.save();
         })
         .then((result) => {
