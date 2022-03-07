@@ -15,6 +15,24 @@ let { loggerInfo } = require('./utils/logs');
 
 const app = express();
 
+//--------------Cluster
+
+let cluster = require('cluster');
+let numCPUs = require('os').cpus().length;
+const modoCluster = process.argv[2] == 'CLUSTER'
+
+// Master/Primary
+if (modoCluster && cluster.isMaster) {
+    loggerInfo.info(`Master ${process.pid} is running`);
+
+    for (let index = 0; index < numCPUs; index++) {
+        cluster.fork();
+    }
+    cluster.on("exit", (worker) =>
+        loggerInfo.info(`Worker ${worker.process.pid} died`)
+    );
+} else {
+
 const PORT = process.env.PORT || 5001;
 const MONGODB_URI = process.env.DB_MONGO_ATLAS_URI;
 
@@ -85,5 +103,7 @@ app.use((error, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-    loggerInfo.info(`Server listening on http://localhost:${PORT}`);
-});
+    loggerInfo.info(`Server listening on http://localhost:${PORT} || PID: ${process.pid}`);
+})
+
+}
