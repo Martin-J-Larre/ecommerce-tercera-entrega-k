@@ -3,10 +3,14 @@ const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const sendgridTransport = require("nodemailer-sendgrid-transport");
+
+let { loggerInfo, loggerError } = require('../utils/logs');
 const { validationResult } = require("express-validator/check");
 
 const User = require("../models/user");
 const sendEmail = require('../email/ethereal');
+// const  enviarEthereal  = require('../email/ethereal');
+// const sendEmail = require('../email/ethereal');
 const transporter = nodemailer.createTransport(
     sendgridTransport({
         auth: {
@@ -97,7 +101,7 @@ exports.postLogin = (req, res, next) => {
                         req.session.isLoggedIn = true;
                         req.session.user = user;
                         return req.session.save((err) => {
-                            console.log(err);
+                            loggerError.error(err);
                             res.redirect("/");
                         });
                     }
@@ -113,7 +117,7 @@ exports.postLogin = (req, res, next) => {
                     });
                 })
                 .catch((err) => {
-                    console.log(err);
+                    loggerError.error(err);
                     res.redirect("/login");
                 });
         })
@@ -134,7 +138,7 @@ exports.postSignup = (req, res, next) => {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        console.log(errors.array());
+        loggerError.error(errors.array());
         return res.status(422).render("auth/signup", {
             path: "/signup",
             pageTitle: "Signup",
@@ -164,6 +168,37 @@ exports.postSignup = (req, res, next) => {
                 password: hashedPassword,
                 cart: { items: [] },
             });
+            // ----------- Gmail
+            loggerInfo.info("user----->",user);
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL_GMAIL,
+                    pass: process.env.GMAIL_PWORD
+                }
+            });
+            (async() => {
+                const options = {
+                    From: "ShopApp",
+                    to: process.env.EMAIL_GMAIL,
+                    subject: "Nuevo registro",
+                    html:`<h1>Nuevo Usuario</h1>
+                        <p>Name:${user.name}</p>
+                        <p>Email:${user.email}</p>
+                        <p>Address:${user.address}</p>
+                        <p>Phone:${user.phone}</p>
+                        <p>Age:${user.age}</p>
+                        `
+                }
+                try {
+                    const resp = await transporter.sendMail(options);
+                    loggerInfo.info("respuesta",resp);
+                } catch (err) {
+                    loggerError.error(err);
+                }
+            })();
+            // ! Mail ethereal no funciona
+            // enviarEthereal(process.env.EMAIL_ADMIN, "Nuevo Registro", JSON.stringify(user));
             return user.save();
         })
         .then((result) => {
@@ -178,7 +213,7 @@ exports.postSignup = (req, res, next) => {
 
 exports.postLogout = (req, res, next) => {
     req.session.destroy((err) => {
-        console.log(err);
+        loggerError.error(err);
         res.redirect("/");
     });
 };
@@ -200,7 +235,7 @@ exports.getReset = (req, res, next) => {
 exports.postReset = (req, res, next) => {
     crypto.randomBytes(32, (err, buffer) => {
         if (err) {
-            console.log(err);
+            loggerError.error(err);
             return res.redirect("/reset");
         }
         const token = buffer.toString("hex");

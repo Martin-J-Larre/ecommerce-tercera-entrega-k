@@ -1,5 +1,6 @@
 const Product = require("../models/product");
 const Order = require("../models/order");
+let { loggerInfo } = require('../utils/logs');
 
 exports.getProducts = (req, res, next) => {
     Product.find()
@@ -76,7 +77,7 @@ exports.postCart = (req, res, next) => {
             return req.user.addToCart(product);
         })
         .then((result) => {
-            console.log(result);
+            loggerInfo.info(result);
             res.redirect("/cart");
         })
         .catch((err) => {
