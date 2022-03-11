@@ -5,4 +5,4 @@
 ## Agregar .env y las variables como en .env.example
 ## Run ---> npm run dev
 ## Abrir local host
-- [`http://localhost:5000`](http://localhost:{puerto}/)
+- [`http://localhost:{puerto}`](http://localhost:{puerto}/)
